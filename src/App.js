@@ -6,12 +6,16 @@ import SpotifyWebApi from 'spotify-web-api-js'
 import Player from './Player';
 import { useDataLayerValue } from './DataLayer';
 
+
 const spotify = new SpotifyWebApi();
+
+
+// Author : Mann Desai
 
 function App() {
   
-  const [token , setToken] = useState(null);
-  const [{ user } , dispatch] = useDataLayerValue();
+  
+  const [{ token } , dispatch] = useDataLayerValue();
   
   // Run Code Based On a Given Condition
   useEffect(()=>{
@@ -21,24 +25,28 @@ function App() {
     const _token = hash.access_token;
 
     if(_token){
-      setToken(_token)
+      dispatch({
+        type: 'SET_TOKEN',
+        token: _token,
+      })
       spotify.setAccessToken(_token);
       spotify.getMe().then((user) => {
-      
-      dispatch({
-        type: 'SET_USER',
-        user: user,
-      })
-      
-      console.log('User : ' , user);
+        dispatch({
+          type: 'SET_USER',
+          user: user,
+        })
       })
     }
   } , []);
 
+  // console.log('User : ' , user);
+  // console.log('Alian : ' , token);
+
+
   return (
     <div className="App">
       {
-        token ? <Player/> : <Login />
+        token ? <Player spotify={spotify}/> : <Login />
       }
     </div>
   );
